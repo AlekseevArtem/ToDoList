@@ -1,3 +1,19 @@
 <resources>
-    <string name="app_name">ToDoList</string>
+    <string name="app_name">To-Do List</string>
+    <string name="toolbar_showtask">Task</string>
+    <string name="delete_tasks">Delete</string>
+    <string name="create_new_task">New task</string>
+    <string name="confirm">Confirm</string>
+    <string name="dialog_delete_all">Delete all tasks?</string>
+    <string name="task_status_not_done">In progress…</string>
+    <string name="task_status_done">Task done!</string>
+    <string name="intent_question">What are you going to do?</string>
+    <string name="description">Describe your task:</string>
+    <string name="show_task_name">Name:</string>
+    <string name="show_task_description">Description:</string>
+    <string name="answer_done">Have you done it?</string>
+    <string name="task_need_name">Enter task at first</string>
+    <string name="data_created">Created:</string>
+    <string name="data_finished">Finished:</string>
+    <string name="example_text" translatable="false">Some Text</string>
 </resources>

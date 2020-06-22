@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rv_container"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginRight="10dp"
+    android:background="#FFFFFF"
+    android:orientation="horizontal"
+    android:paddingTop="10dp">
+
+    <TextView
+        android:id="@+id/rv_task_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:singleLine="false"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/rv_task_status"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/example_text" />
+
+    <TextView
+        android:id="@+id/rv_task_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_weight="1"
+        android:text=""
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/rv_task_name"
+        app:layout_constraintEnd_toStartOf="@+id/rv_task_edit"
+        app:layout_constraintTop_toTopOf="@+id/rv_task_name"
+        tools:text="@string/example_text" />
+
+    <ImageView
+        android:id="@+id/rv_task_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="6dp"
+        android:layout_marginRight="6dp"
+        app:layout_constraintBottom_toBottomOf="@+id/rv_task_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rv_task_name"
+        app:srcCompat="@drawable/ic_delete" />
+
+    <ImageView
+        android:id="@+id/rv_task_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="6dp"
+        android:layout_marginRight="6dp"
+        app:layout_constraintBottom_toBottomOf="@+id/rv_task_delete"
+        app:layout_constraintEnd_toStartOf="@+id/rv_task_delete"
+        app:layout_constraintTop_toTopOf="@+id/rv_task_delete"
+        app:srcCompat="@drawable/ic_edit" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/intent_question" />
+
+    <EditText
+        android:id="@+id/create_edit_task_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:ems="12"
+        android:maxLength="20"
+        tools:text="@string/example_text"
+        android:layout_marginStart="5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/description" />
+
+    <EditText
+        android:id="@+id/create_edit_task_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:ems="12"
+        android:gravity="start|top"
+        android:inputType="textLongMessage|textMultiLine"
+        android:maxLength="100"
+        tools:text="@string/example_text"
+        android:autofillHints="description"
+        android:layout_marginStart="5dp" />
+
+    <CheckBox
+        android:id="@+id/create_edit_task_done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="true"
+        android:visibility="invisible"
+        android:text="@string/answer_done" />
+
+</LinearLayout>

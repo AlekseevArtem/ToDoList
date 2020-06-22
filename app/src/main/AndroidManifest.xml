@@ -17,6 +17,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".CreateOrEditTaskActivity"
+            android:label=""/>
+        <activity android:name=".ShowTaskActivity"
+            android:label="@string/toolbar_showtask"/>
     </application>
 
 </manifest>

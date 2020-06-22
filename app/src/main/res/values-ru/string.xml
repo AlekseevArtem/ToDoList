@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Список дел</string>
+    <string name="toolbar_showtask">Задача</string>
+    <string name="delete_tasks">Удалить</string>
+    <string name="create_new_task">Новая задача</string>
+    <string name="confirm">Поддтвердить</string>
+    <string name="dialog_delete_all">Удалить весь список?</string>
+    <string name="task_status_not_done">В процессе…</string>
+    <string name="task_status_done">Выполнена!</string>
+    <string name="intent_question">Что надо сделать?</string>
+    <string name="description">Описание задачи:</string>
+    <string name="show_task_name">Наименование:</string>
+    <string name="show_task_description">Описание:</string>
+    <string name="answer_done">Уже сделал?</string>
+    <string name="task_need_name">Введите имя для начала</string>
+    <string name="data_created">Создана:</string>
+    <string name="data_finished">Выполнена:</string>
+</resources>
