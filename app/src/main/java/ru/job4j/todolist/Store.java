@@ -10,6 +10,10 @@ class Store {
     private Store() {
     }
 
+    public Store(List<Task> tasks) {
+        this.tasks = tasks;
+    }
+
     public static Store getInstance() {
         return INST;
     }

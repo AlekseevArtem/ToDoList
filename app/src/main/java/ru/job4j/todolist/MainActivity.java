@@ -25,7 +25,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity implements ConfirmDeleteDialogFragment.ConfirmDeleteDialogListener {
     private RecyclerView recycler;
     private Store store = Store.getInstance();
-    private static final int CHANGED_TASK = 0;
+    private final int CHANGED_TASK = 0;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
