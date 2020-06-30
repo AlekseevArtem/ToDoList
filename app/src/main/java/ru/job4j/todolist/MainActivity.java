@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,24 +23,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import java.util.Objects;
 
+import ru.job4j.todolist.store.IStore;
+import ru.job4j.todolist.store.SqlStore;
+
 public class MainActivity extends AppCompatActivity implements ConfirmDeleteDialogFragment.ConfirmDeleteDialogListener {
     private RecyclerView recycler;
-    private Store store = Store.getInstance();
+    private IStore store;
     private final int CHANGED_TASK = 0;
 
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
-        if (Objects.requireNonNull(data).hasExtra("add")) {
-            Objects.requireNonNull(recycler.getAdapter()).
-                    notifyItemInserted(data.getIntExtra("add", -1));
-        } else if (data.hasExtra("edit")) {
-            Objects.requireNonNull(recycler.getAdapter()).
-                    notifyItemChanged(data.getIntExtra("edit", -1));
-        }
+        this.store = new SqlStore(this);
+        updateUI();
+//        if (Objects.requireNonNull(data).hasExtra("add")) {
+//            Objects.requireNonNull(recycler.getAdapter()).
+//                    notifyItemInserted(data.getIntExtra("add", -1));
+//        } else if (data.hasExtra("edit")) {
+//            Objects.requireNonNull(recycler.getAdapter()).
+//                    notifyItemChanged(data.getIntExtra("edit", -1));
+//        }
     }
 
     @Override
@@ -48,6 +53,11 @@ public class MainActivity extends AppCompatActivity implements ConfirmDeleteDial
         setContentView(R.layout.activity_main);
         this.recycler = findViewById(R.id.activity_main);
         this.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        this.store = new SqlStore(this);
+        updateUI();
+    }
+
+    private void updateUI() {
         this.recycler.setAdapter(new TasksAdapter(store.getTasks()));
     }
 
@@ -66,6 +76,22 @@ public class MainActivity extends AppCompatActivity implements ConfirmDeleteDial
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.search_icon:
+                SearchView searchView = (SearchView) item.getActionView();
+                searchView.setQueryHint("Search here");
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+                        recycler.setAdapter(new TasksAdapter(store.getFilteredTasks(newText)));
+                        return true;
+                    }
+                });
+                return true;
             case R.id.create_new_task:
                 addOne();
                 return true;
@@ -88,8 +114,8 @@ public class MainActivity extends AppCompatActivity implements ConfirmDeleteDial
     }
 
     private void deleteAll() {
-        store.getTasks().clear();
-        Objects.requireNonNull(recycler.getAdapter()).notifyDataSetChanged();
+        store.deleteAllTasks();
+        updateUI();
     }
 
     private void addOne() {
@@ -131,21 +157,22 @@ public class MainActivity extends AppCompatActivity implements ConfirmDeleteDial
             ((ImageView) holder.view.findViewById(R.id.rv_task_delete)).setOnClickListener(view -> deleteTask(view, i));
         }
 
-        private void callShowActivity(View view, int index) {
+        private void callShowActivity(View view, int position) {
             Intent intent = new Intent(getApplicationContext(), ShowTaskActivity.class);
-            intent.putExtra("index", index);
+            intent.putExtra("position for show", position);
             startActivity(intent);
         }
 
-        private void callEditActivity(View view, int index) {
+        private void callEditActivity(View view, int position) {
             Intent intent = new Intent(getApplicationContext(), CreateOrEditTaskActivity.class);
-            intent.putExtra("item for edit", index);
+            intent.putExtra("position for edit", position);
             startActivityForResult(intent,CHANGED_TASK);
         }
 
         private void deleteTask(View view, int index) {
-            store.getTasks().remove(index);
-            Objects.requireNonNull(recycler.getAdapter()).notifyItemRemoved(index);
+            tasks.remove(index);
+            store.deleteTask(index);
+            notifyItemRemoved(index);
         }
 
         @Override

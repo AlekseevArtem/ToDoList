@@ -1,4 +1,4 @@
-package ru.job4j.todolist;
+package ru.job4j.todolist.contentProvider;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -8,14 +8,14 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Objects;
-import java.util.stream.Collectors;
+
+import ru.job4j.todolist.store.SqlStore;
 
 public class StoreContentProvider extends ContentProvider {
 
     public static final Uri CONTENT_URI = Uri.parse("content://ru.job4j.todo/items");
 
-    private final Store store = Store.getInstance();
+    private final SqlStore store = new SqlStore(getContext());
 
     @Override
     public boolean onCreate() {
@@ -25,9 +25,7 @@ public class StoreContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        return new StoreCursor(new Store(store.getTasks().stream()
-                .filter(task -> task.getName().contains(Objects.requireNonNull(selection)))
-                .collect(Collectors.toList())));
+        return new StoreCursor(store.getFilteredTasks(selection));
     }
 
     @Nullable

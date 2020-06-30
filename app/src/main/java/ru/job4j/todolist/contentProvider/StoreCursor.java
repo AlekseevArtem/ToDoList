@@ -1,17 +1,21 @@
-package ru.job4j.todolist;
+package ru.job4j.todolist.contentProvider;
 
 import android.database.AbstractCursor;
 
-public class StoreCursor extends AbstractCursor {
-    private final Store store;
+import java.util.List;
 
-    public StoreCursor(Store store) {
+import ru.job4j.todolist.Task;
+
+public class StoreCursor extends AbstractCursor {
+    private final List<Task> store;
+
+    public StoreCursor(List<Task> store) {
         this.store = store;
     }
 
     @Override
     public int getCount() {
-        return store.getTasks().size();
+        return store.size();
     }
 
     @Override
@@ -21,7 +25,7 @@ public class StoreCursor extends AbstractCursor {
 
     @Override
     public String getString(int column) {
-        Task task = store.getTasks().get(getPosition());
+        Task task = store.get(getPosition());
         String value = null;
         if (column == 1) {
             value = task.getName();
