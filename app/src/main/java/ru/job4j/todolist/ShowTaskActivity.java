@@ -26,7 +26,7 @@ public class ShowTaskActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         int position = getIntent().getIntExtra("position for show", -1);
-        this.store = new SqlStore(this);
+        this.store = SqlStore.getInstance(this);
         Task task = store.getTask(position);
         ((TextView) findViewById(R.id.show_task_name)).setText(task.getName());
         ((TextView) findViewById(R.id.show_task_description)).setText(task.getDesc());

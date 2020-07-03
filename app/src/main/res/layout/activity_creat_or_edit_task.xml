@@ -15,11 +15,10 @@
         android:id="@+id/create_edit_task_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
         android:layout_marginLeft="5dp"
         android:ems="12"
-        android:maxLength="20"
-        tools:text="@string/example_text"
-        android:layout_marginStart="5dp" />
+        tools:text="@string/example_text" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -30,21 +29,21 @@
         android:id="@+id/create_edit_task_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
         android:layout_marginLeft="5dp"
+        android:autofillHints="description"
         android:ems="12"
         android:gravity="start|top"
         android:inputType="textLongMessage|textMultiLine"
         android:maxLength="100"
-        tools:text="@string/example_text"
-        android:autofillHints="description"
-        android:layout_marginStart="5dp" />
+        tools:text="@string/example_text" />
 
     <CheckBox
         android:id="@+id/create_edit_task_done"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:enabled="true"
-        android:visibility="invisible"
-        android:text="@string/answer_done" />
+        android:text="@string/answer_done"
+        android:visibility="invisible" />
 
 </LinearLayout>

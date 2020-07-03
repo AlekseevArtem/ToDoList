@@ -36,7 +36,7 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         CheckBox done = findViewById(R.id.create_edit_task_done);
-        this.store = new SqlStore(this);
+        this.store = SqlStore.getInstance(this);
         if(getIntent().hasExtra("position for edit")) {
             position = getIntent().getIntExtra("position for edit", -1);
             Task task = store.getTask(position);

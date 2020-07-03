@@ -48,6 +48,12 @@ public class MemStore implements IStore {
     }
 
     @Override
+    public void closeOrReopenTask(int position, String closed) {
+        Task task = this.tasks.get(position);
+        task.setClosed(closed);
+    }
+
+    @Override
     public void deleteTask(int position) {
         this.tasks.remove(position);
     }

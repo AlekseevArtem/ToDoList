@@ -8,19 +8,20 @@ import java.util.List;
 import ru.job4j.todolist.Task;
 
 public interface IStore {
-    List<Task> tasks = new ArrayList<>();
 
-    public List<Task> getTasks();
+    List<Task> getTasks();
 
-    public List<Task> getFilteredTasks(String filter);
+    List<Task> getFilteredTasks(String filter);
 
-    public void addTask(String name,String description,String created);
+    void addTask(String name,String description,String created);
 
-    public void editTask(int position, String name,String description,String closed);
+    void editTask(int position, String name,String description,String closed);
 
-    public void deleteTask(int position);
+    void closeOrReopenTask(int position, String closed);
 
-    public void deleteAllTasks();
+    void deleteTask(int position);
 
-    public Task getTask(int position);
+    void deleteAllTasks();
+
+    Task getTask(int position);
 }

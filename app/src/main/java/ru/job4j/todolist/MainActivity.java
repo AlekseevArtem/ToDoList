@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -20,6 +21,8 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,15 +39,13 @@ public class MainActivity extends AppCompatActivity implements ConfirmDeleteDial
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
-        this.store = new SqlStore(this);
-        updateUI();
-//        if (Objects.requireNonNull(data).hasExtra("add")) {
-//            Objects.requireNonNull(recycler.getAdapter()).
-//                    notifyItemInserted(data.getIntExtra("add", -1));
-//        } else if (data.hasExtra("edit")) {
-//            Objects.requireNonNull(recycler.getAdapter()).
-//                    notifyItemChanged(data.getIntExtra("edit", -1));
-//        }
+        if (Objects.requireNonNull(data).hasExtra("add")) {
+            Objects.requireNonNull(recycler.getAdapter()).
+                    notifyItemInserted(data.getIntExtra("add", -1));
+        } else if (data.hasExtra("edit")) {
+            Objects.requireNonNull(recycler.getAdapter()).
+                    notifyItemChanged(data.getIntExtra("edit", -1));
+        }
     }
 
     @Override
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements ConfirmDeleteDial
         setContentView(R.layout.activity_main);
         this.recycler = findViewById(R.id.activity_main);
         this.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        this.store = new SqlStore(this);
+        this.store = SqlStore.getInstance(this);
         updateUI();
     }
 
@@ -155,6 +156,9 @@ public class MainActivity extends AppCompatActivity implements ConfirmDeleteDial
             ((TextView) holder.view.findViewById(R.id.rv_task_status)).setText(status);
             ((ImageView) holder.view.findViewById(R.id.rv_task_edit)).setOnClickListener(view -> callEditActivity(view, i));
             ((ImageView) holder.view.findViewById(R.id.rv_task_delete)).setOnClickListener(view -> deleteTask(view, i));
+            CheckBox doneUndone = holder.view.findViewById(R.id.rv_task_check_done);
+            doneUndone.setChecked(task.getClosed() != null);
+            doneUndone.setOnClickListener(view -> makeTaskDoneOrUndone(view, i));
         }
 
         private void callShowActivity(View view, int position) {
@@ -173,6 +177,19 @@ public class MainActivity extends AppCompatActivity implements ConfirmDeleteDial
             tasks.remove(index);
             store.deleteTask(index);
             notifyItemRemoved(index);
+        }
+
+        private void makeTaskDoneOrUndone(View view, int index) {
+            CheckBox doneUndone = view.findViewById(R.id.rv_task_check_done);
+            if (!doneUndone.isChecked()) {
+                doneUndone.setChecked(false);
+                store.closeOrReopenTask(index, null);
+            } else {
+                doneUndone.setChecked(true);
+                store.closeOrReopenTask(index,
+                        new SimpleDateFormat("dd-MM-yyyy HH:mm E").format(new Date(System.currentTimeMillis())));
+            }
+            notifyItemChanged(index);
         }
 
         @Override

@@ -18,8 +18,9 @@ public class SqlStore extends SQLiteOpenHelper implements IStore {
     public static final String DB = "todo.db";
     public static final int VERSION = 1;
     private List<Task> tasks = new ArrayList<>();
+    private static SqlStore INST;
 
-    public SqlStore(@Nullable Context context) {
+    private SqlStore(@Nullable Context context) {
         super(context, DB, null , VERSION);
         Cursor cursor = this.getWritableDatabase().query(
                 TodoDbSchema.TodoTable.NAME,
@@ -57,6 +58,13 @@ public class SqlStore extends SQLiteOpenHelper implements IStore {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    }
+
+    public static SqlStore getInstance(Context context) {
+        if (INST == null){
+            INST = new SqlStore(context);
+        }
+        return INST;
     }
 
     @Override
@@ -107,6 +115,25 @@ public class SqlStore extends SQLiteOpenHelper implements IStore {
     }
 
     @Override
+    public void closeOrReopenTask(int position, String closed) {
+        ContentValues value = new ContentValues();
+        value.put(TodoDbSchema.TodoTable.Cols.CLOSED, closed);
+        Cursor cursor = this.getWritableDatabase().query(
+                TodoDbSchema.TodoTable.NAME, null, null, null,
+                null, null, null
+        );
+        cursor.moveToPosition(position);
+        int id = cursor.getInt(cursor.getColumnIndex("id"));
+        cursor.close();
+        this.getWritableDatabase().update(TodoDbSchema.TodoTable.NAME,
+                value,
+                "id = ?",
+                new String[]{String.valueOf(id)});
+        Task task = this.tasks.get(position);
+        task.setClosed(closed);
+    }
+
+    @Override
     public void deleteTask(int position) {
         Cursor cursor = this.getWritableDatabase().query(
                 TodoDbSchema.TodoTable.NAME, null, null, null,
@@ -118,7 +145,6 @@ public class SqlStore extends SQLiteOpenHelper implements IStore {
         this.getWritableDatabase().delete(TodoDbSchema.TodoTable.NAME,
                     "id = ?",
                     new String[]{String.valueOf(id)});
-//        this.tasks.remove(position);
     }
 
     @Override

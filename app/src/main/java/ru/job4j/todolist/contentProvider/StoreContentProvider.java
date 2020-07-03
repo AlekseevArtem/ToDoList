@@ -15,10 +15,11 @@ public class StoreContentProvider extends ContentProvider {
 
     public static final Uri CONTENT_URI = Uri.parse("content://ru.job4j.todo/items");
 
-    private final SqlStore store = new SqlStore(getContext());
+    private SqlStore store;
 
     @Override
     public boolean onCreate() {
+        store = SqlStore.getInstance(getContext());
         return true;
     }
 

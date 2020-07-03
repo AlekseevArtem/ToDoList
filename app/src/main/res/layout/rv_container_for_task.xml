@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rv_container"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="wrap_content"
     android:layout_marginLeft="10dp"
     android:layout_marginTop="10dp"
     android:layout_marginRight="10dp"
@@ -14,18 +14,17 @@
 
     <TextView
         android:id="@+id/rv_task_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginRight="6dp"
         android:layout_marginBottom="10dp"
         android:singleLine="false"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/rv_task_status"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/rv_task_check_done"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/example_text" />
 
@@ -64,5 +63,13 @@
         app:layout_constraintEnd_toStartOf="@+id/rv_task_delete"
         app:layout_constraintTop_toTopOf="@+id/rv_task_delete"
         app:srcCompat="@drawable/ic_edit" />
+
+    <CheckBox
+        android:id="@+id/rv_task_check_done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/rv_task_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rv_task_name" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

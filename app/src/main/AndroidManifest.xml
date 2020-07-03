@@ -11,9 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-<!--        <provider-->
-<!--            android:authorities="ru.job4j.todo"-->
-<!--            android:name=".contentProvider.StoreContentProvider"/>-->
+        <provider
+            android:authorities="ru.job4j.todo"
+            android:name=".contentProvider.StoreContentProvider"/>
 
         <activity android:name=".MainActivity">
             <intent-filter>
