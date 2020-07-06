@@ -19,7 +19,7 @@ public class StoreContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        store = SqlStore.getInstance(getContext());
+        store = new SqlStore(getContext());
         return true;
     }
 

@@ -20,7 +20,7 @@ public class SqlStore extends SQLiteOpenHelper implements IStore {
     private List<Task> tasks = new ArrayList<>();
     private static SqlStore INST;
 
-    private SqlStore(@Nullable Context context) {
+    public SqlStore(@Nullable Context context) {
         super(context, DB, null , VERSION);
         Cursor cursor = this.getWritableDatabase().query(
                 TodoDbSchema.TodoTable.NAME,
