@@ -18,6 +18,7 @@
         android:layout_marginStart="5dp"
         android:layout_marginLeft="5dp"
         android:ems="12"
+        android:inputType="textCapSentences"
         tools:text="@string/example_text" />
 
     <TextView
@@ -34,7 +35,7 @@
         android:autofillHints="description"
         android:ems="12"
         android:gravity="start|top"
-        android:inputType="textLongMessage|textMultiLine"
+        android:inputType="textCapSentences"
         android:maxLength="100"
         tools:text="@string/example_text" />
 
@@ -45,5 +46,13 @@
         android:enabled="true"
         android:text="@string/answer_done"
         android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/photo"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:cropToPadding="true"
+        android:scaleType="centerInside"
+        android:src="@android:drawable/ic_menu_report_image" />
 
 </LinearLayout>

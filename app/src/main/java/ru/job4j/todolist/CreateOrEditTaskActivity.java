@@ -1,13 +1,17 @@
 package ru.job4j.todolist;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,6 +28,25 @@ import ru.job4j.todolist.store.IStore;
 public class CreateOrEditTaskActivity extends AppCompatActivity {
     private IStore store;
     private int id = -1;
+    private EditText mName;
+    private EditText mDescription;
+    private CheckBox mDone;
+    private ImageView mPhoto;
+    private Bitmap mPhotoBitmap;
+    public static final int REQUEST_IMAGE_CAPTURE = 123;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = Objects.requireNonNull(data).getExtras();
+            mPhotoBitmap = (Bitmap) Objects.requireNonNull(extras).get("data");
+            Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+            mPhotoBitmap = Bitmap.createBitmap(mPhotoBitmap, 0, 0, mPhotoBitmap.getWidth(), mPhotoBitmap.getHeight(), matrix, true);
+            mPhoto.setImageBitmap(mPhotoBitmap);
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle state) {
@@ -31,20 +54,22 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_creat_or_edit_task);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        CheckBox done = findViewById(R.id.create_edit_task_done);
+        mDone = findViewById(R.id.create_edit_task_done);
+        mPhoto = findViewById(R.id.photo);
+        mName = findViewById(R.id.create_edit_task_name);
+        mDescription = findViewById(R.id.create_edit_task_description);
+        if(state != null) mPhoto.setImageBitmap(mPhotoBitmap);
         this.store = FileStore.getInstance(this);
+        mPhoto.setOnClickListener(this::clickOnPhoto);
         if(getIntent().hasExtra("id for edit")) {
             id = getIntent().getIntExtra("id for edit", -1);
             Task task = store.findTaskByID(id);
-            done.setVisibility(View.VISIBLE);
-            EditText name = findViewById(R.id.create_edit_task_name);
-            name.setText(task.getName());
-            name.setHint(task.getName());
-            EditText description = findViewById(R.id.create_edit_task_description);
-            description.setText(task.getDesc());
-            description.setHint(task.getDesc());
-            boolean finished = task.getClosed() != null;
-            ((CheckBox) findViewById(R.id.create_edit_task_done)).setChecked(finished);
+            mDone.setVisibility(View.VISIBLE);
+            mName.setText(task.getName());
+            mName.setHint(task.getName());
+            mDescription.setText(task.getDesc());
+            mDescription.setHint(task.getDesc());
+            mDone.setChecked(task.getClosed() != null);
 
         }
     }
@@ -65,7 +90,7 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.create_edit_confirm:
-                if(((EditText) findViewById(R.id.create_edit_task_name)).getText().toString().trim().length() < 1) {
+                if(mName.getText().toString().trim().length() < 1) {
                     Toast.makeText(
                             getApplicationContext(), R.string.task_need_name,
                             Toast.LENGTH_SHORT
@@ -89,12 +114,6 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
         }
     }
 
-    private void setAnswerPositionResult(int index, String name) {
-        Intent intent = new Intent();
-        intent.putExtra(name, index);
-        setResult(RESULT_OK, intent);
-    }
-
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -105,18 +124,32 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
     }
 
+    private void setAnswerPositionResult(int index, String name) {
+        Intent intent = new Intent();
+        intent.putExtra(name, index);
+        setResult(RESULT_OK, intent);
+    }
+
+
+    private void clickOnPhoto(View view) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
     private void createNewTask() {
-        String name = String.valueOf(((EditText) findViewById(R.id.create_edit_task_name)).getText());
-        String description = String.valueOf(((EditText) findViewById(R.id.create_edit_task_description)).getText());
+        String name = String.valueOf(this.mName.getText());
+        String description = String.valueOf(this.mDescription.getText());
         String created = new SimpleDateFormat("dd-MM-yyyy HH:mm E").format(new Date(System.currentTimeMillis()));
         store.addTask(name,description,created);
     }
 
     private void editTask() {
-        String name = String.valueOf(((EditText) findViewById(R.id.create_edit_task_name)).getText());
-        String description = String.valueOf(((EditText) findViewById(R.id.create_edit_task_description)).getText());
+        String name = String.valueOf(this.mName.getText());
+        String description = String.valueOf(this.mDescription.getText());
         String closed = null;
-        if (((CheckBox) findViewById(R.id.create_edit_task_done)).isChecked()) {
+        if (this.mDone.isChecked()) {
             closed = new SimpleDateFormat("dd-MM-yyyy HH:mm E").format(new Date(System.currentTimeMillis()));
         }
         store.editTask(id,name,description,closed);
