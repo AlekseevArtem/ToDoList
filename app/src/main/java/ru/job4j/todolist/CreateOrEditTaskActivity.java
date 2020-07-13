@@ -1,9 +1,6 @@
 package ru.job4j.todolist;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,13 +18,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
+import ru.job4j.todolist.store.FileStore;
 import ru.job4j.todolist.store.IStore;
-import ru.job4j.todolist.store.SqlStore;
-import ru.job4j.todolist.store.TodoDbSchema;
 
 public class CreateOrEditTaskActivity extends AppCompatActivity {
     private IStore store;
-    private int position = -1;
+    private int id = -1;
 
     @Override
     protected void onCreate(@Nullable Bundle state) {
@@ -36,10 +32,10 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         CheckBox done = findViewById(R.id.create_edit_task_done);
-        this.store = SqlStore.getInstance(this);
-        if(getIntent().hasExtra("position for edit")) {
-            position = getIntent().getIntExtra("position for edit", -1);
-            Task task = store.getTask(position);
+        this.store = FileStore.getInstance(this);
+        if(getIntent().hasExtra("id for edit")) {
+            id = getIntent().getIntExtra("id for edit", -1);
+            Task task = store.findTaskByID(id);
             done.setVisibility(View.VISIBLE);
             EditText name = findViewById(R.id.create_edit_task_name);
             name.setText(task.getName());
@@ -76,12 +72,12 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
                     ).show();
                     return true;
                 }
-                if (position == -1) {
+                if (id == -1) {
                     createNewTask();
                     setAnswerPositionResult(store.getTasks().size()-1,"add");
                 } else {
                     editTask();
-                    setAnswerPositionResult(position,"edit");
+                    setAnswerPositionResult(store.getPositionOfTaskById(id),"edit");
                 }
                 onBackPressed();
                 return true;
@@ -123,7 +119,7 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
         if (((CheckBox) findViewById(R.id.create_edit_task_done)).isChecked()) {
             closed = new SimpleDateFormat("dd-MM-yyyy HH:mm E").format(new Date(System.currentTimeMillis()));
         }
-        store.editTask(position,name,description,closed);
+        store.editTask(id,name,description,closed);
 
     }
 }

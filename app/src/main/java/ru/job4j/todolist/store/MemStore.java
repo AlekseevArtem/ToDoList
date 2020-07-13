@@ -1,5 +1,7 @@
 package ru.job4j.todolist.store;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,6 +11,7 @@ import ru.job4j.todolist.Task;
 public class MemStore implements IStore {
     private List<Task> tasks = new ArrayList<>();
     private static final MemStore INST = new MemStore();
+    private int counter = 0;
 
     private MemStore() {
     }
@@ -17,7 +20,7 @@ public class MemStore implements IStore {
         this.tasks = tasks;
     }
 
-    public static MemStore getInstance() {
+    public static MemStore getInstance(Context context) {
         return INST;
     }
 
@@ -36,26 +39,28 @@ public class MemStore implements IStore {
 
     @Override
     public void addTask(String name,String description,String created) {
-        this.tasks.add(new Task(name,description,created));
+        this.tasks.add(new Task(counter++, name, description, created,null));
     }
 
     @Override
-    public void editTask(int position, String name,String description,String closed) {
-        Task task = this.tasks.get(position);
+    public void editTask(int id, String name,String description,String closed) {
+        Task task = findTaskByID(id);
         task.setName(name);
         task.setDesc(description);
         task.setClosed(closed);
     }
 
     @Override
-    public void closeOrReopenTask(int position, String closed) {
-        Task task = this.tasks.get(position);
+    public void closeOrReopenTask(int id, String closed) {
+        Task task = findTaskByID(id);
         task.setClosed(closed);
     }
 
     @Override
-    public void deleteTask(int position) {
-        this.tasks.remove(position);
+    public int deleteTask(int id) {
+        int result = getPositionOfTaskById(id);
+        this.tasks.remove(result);
+        return result;
     }
 
     @Override
@@ -64,7 +69,17 @@ public class MemStore implements IStore {
     }
 
     @Override
-    public Task getTask(int position) {
-        return this.tasks.get(position);
+    public Task findTaskByID(int id) {
+        return this.tasks.get(getPositionOfTaskById(id));
+    }
+
+    @Override
+    public int getPositionOfTaskById(int id) {
+        for (int index = 0 ; index < tasks.size(); index ++) {
+            if (tasks.get(index).getId() == id) {
+                return index;
+            }
+        }
+        return -1;
     }
 }

@@ -26,8 +26,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import ru.job4j.todolist.store.FileStore;
 import ru.job4j.todolist.store.IStore;
-import ru.job4j.todolist.store.SqlStore;
 
 public class MainActivity extends AppCompatActivity implements ConfirmDeleteDialogFragment.ConfirmDeleteDialogListener {
     private RecyclerView recycler;
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements ConfirmDeleteDial
         setContentView(R.layout.activity_main);
         this.recycler = findViewById(R.id.activity_main);
         this.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        this.store = SqlStore.getInstance(this);
+        this.store = FileStore.getInstance(this);
         updateUI();
     }
 
@@ -152,44 +152,42 @@ public class MainActivity extends AppCompatActivity implements ConfirmDeleteDial
             int status = task.getClosed() == null ? R.string.task_status_not_done : R.string.task_status_done;
             TextView taskName = holder.view.findViewById(R.id.rv_task_name);
             taskName.setText(task.getName());
-            taskName.setOnClickListener(view -> callShowActivity(view, i));
+            taskName.setOnClickListener(view -> callShowActivity(view, task.getId()));
             ((TextView) holder.view.findViewById(R.id.rv_task_status)).setText(status);
-            ((ImageView) holder.view.findViewById(R.id.rv_task_edit)).setOnClickListener(view -> callEditActivity(view, i));
-            ((ImageView) holder.view.findViewById(R.id.rv_task_delete)).setOnClickListener(view -> deleteTask(view, i));
+            ((ImageView) holder.view.findViewById(R.id.rv_task_edit)).setOnClickListener(view -> callEditActivity(view, task.getId()));
+            ((ImageView) holder.view.findViewById(R.id.rv_task_delete)).setOnClickListener(view -> deleteTask(view, task.getId()));
             CheckBox doneUndone = holder.view.findViewById(R.id.rv_task_check_done);
             doneUndone.setChecked(task.getClosed() != null);
-            doneUndone.setOnClickListener(view -> makeTaskDoneOrUndone(view, i));
+            doneUndone.setOnClickListener(view -> makeTaskDoneOrUndone(view, task.getId(), i));
         }
 
-        private void callShowActivity(View view, int position) {
+        private void callShowActivity(View view, int id) {
             Intent intent = new Intent(getApplicationContext(), ShowTaskActivity.class);
-            intent.putExtra("position for show", position);
+            intent.putExtra("id for show", id);
             startActivity(intent);
         }
 
-        private void callEditActivity(View view, int position) {
+        private void callEditActivity(View view, int id) {
             Intent intent = new Intent(getApplicationContext(), CreateOrEditTaskActivity.class);
-            intent.putExtra("position for edit", position);
+            intent.putExtra("id for edit", id);
             startActivityForResult(intent,CHANGED_TASK);
         }
 
-        private void deleteTask(View view, int index) {
-            tasks.remove(index);
-            store.deleteTask(index);
-            notifyItemRemoved(index);
+        private void deleteTask(View view, int id) {
+            notifyItemRemoved(store.deleteTask(id));
         }
 
-        private void makeTaskDoneOrUndone(View view, int index) {
+        private void makeTaskDoneOrUndone(View view, int id, int position) {
             CheckBox doneUndone = view.findViewById(R.id.rv_task_check_done);
             if (!doneUndone.isChecked()) {
                 doneUndone.setChecked(false);
-                store.closeOrReopenTask(index, null);
+                store.closeOrReopenTask(id, null);
             } else {
                 doneUndone.setChecked(true);
-                store.closeOrReopenTask(index,
+                store.closeOrReopenTask(id,
                         new SimpleDateFormat("dd-MM-yyyy HH:mm E").format(new Date(System.currentTimeMillis())));
             }
-            notifyItemChanged(index);
+            notifyItemChanged(position);
         }
 
         @Override

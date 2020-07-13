@@ -1,7 +1,5 @@
 package ru.job4j.todolist;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,9 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Objects;
 
+import ru.job4j.todolist.store.FileStore;
 import ru.job4j.todolist.store.IStore;
-import ru.job4j.todolist.store.SqlStore;
-import ru.job4j.todolist.store.TodoDbSchema;
 
 public class ShowTaskActivity extends AppCompatActivity {
     private IStore store;
@@ -25,9 +22,9 @@ public class ShowTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_task);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        int position = getIntent().getIntExtra("position for show", -1);
-        this.store = SqlStore.getInstance(this);
-        Task task = store.getTask(position);
+        int position = getIntent().getIntExtra("id for show", -1);
+        this.store = FileStore.getInstance(this);
+        Task task = store.findTaskByID(position);
         ((TextView) findViewById(R.id.show_task_name)).setText(task.getName());
         ((TextView) findViewById(R.id.show_task_description)).setText(task.getDesc());
         ((TextView) findViewById(R.id.show_task_created))

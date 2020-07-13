@@ -93,58 +93,42 @@ public class SqlStore extends SQLiteOpenHelper implements IStore {
     }
 
     @Override
-    public void editTask(int position, String name, String description, String closed) {
+    public void editTask(int id, String name, String description, String closed) {
         ContentValues value = new ContentValues();
         value.put(TodoDbSchema.TodoTable.Cols.NAME, name);
         value.put(TodoDbSchema.TodoTable.Cols.DESC, description);
         value.put(TodoDbSchema.TodoTable.Cols.CLOSED, closed);
-        Cursor cursor = this.getWritableDatabase().query(
-                TodoDbSchema.TodoTable.NAME, null, null, null,
-                null, null, null
-        );
-        cursor.moveToPosition(position);
-        int id = cursor.getInt(cursor.getColumnIndex("id"));
-        String created = cursor.getString(cursor.getColumnIndex("created"));
-        cursor.close();
         this.getWritableDatabase().update(TodoDbSchema.TodoTable.NAME,
                 value,
                 "id = ?",
                 new String[]{String.valueOf(id)});
-        Task task = new Task(id, name, description, created, closed);
-        this.tasks.set(position, task);
-    }
-
-    @Override
-    public void closeOrReopenTask(int position, String closed) {
-        ContentValues value = new ContentValues();
-        value.put(TodoDbSchema.TodoTable.Cols.CLOSED, closed);
-        Cursor cursor = this.getWritableDatabase().query(
-                TodoDbSchema.TodoTable.NAME, null, null, null,
-                null, null, null
-        );
-        cursor.moveToPosition(position);
-        int id = cursor.getInt(cursor.getColumnIndex("id"));
-        cursor.close();
-        this.getWritableDatabase().update(TodoDbSchema.TodoTable.NAME,
-                value,
-                "id = ?",
-                new String[]{String.valueOf(id)});
-        Task task = this.tasks.get(position);
+        Task task = findTaskByID(id);
+        task.setName(name);
+        task.setDesc(description);
         task.setClosed(closed);
     }
 
     @Override
-    public void deleteTask(int position) {
-        Cursor cursor = this.getWritableDatabase().query(
-                TodoDbSchema.TodoTable.NAME, null, null, null,
-                null, null, null
-        );
-        cursor.moveToPosition(position);
-        int id = cursor.getInt(cursor.getColumnIndex("id"));
-        cursor.close();
+    public void closeOrReopenTask(int id, String closed) {
+        ContentValues value = new ContentValues();
+        value.put(TodoDbSchema.TodoTable.Cols.CLOSED, closed);
+        this.getWritableDatabase().update(TodoDbSchema.TodoTable.NAME,
+                value,
+                "id = ?",
+                new String[]{String.valueOf(id)});
+        Task task = findTaskByID(id);
+        task.setClosed(closed);
+    }
+
+    @Override
+    public int deleteTask(int id) {
         this.getWritableDatabase().delete(TodoDbSchema.TodoTable.NAME,
-                    "id = ?",
-                    new String[]{String.valueOf(id)});
+                "id = ?",
+                new String[]{String.valueOf(id)}
+                );
+        int result = getPositionOfTaskById(id);
+        tasks.remove(result);
+        return result;
     }
 
     @Override
@@ -154,7 +138,17 @@ public class SqlStore extends SQLiteOpenHelper implements IStore {
     }
 
     @Override
-    public Task getTask(int position) {
-        return this.tasks.get(position);
+    public Task findTaskByID(int id) {
+        return tasks.get(getPositionOfTaskById(id));
+    }
+
+    @Override
+    public int getPositionOfTaskById(int id) {
+        for (int index = 0 ; index < tasks.size(); index ++) {
+            if (tasks.get(index).getId() == id) {
+                return index;
+            }
+        }
+        return -1;
     }
 }

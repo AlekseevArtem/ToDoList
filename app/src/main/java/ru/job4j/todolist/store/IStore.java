@@ -1,8 +1,5 @@
 package ru.job4j.todolist.store;
 
-import android.content.ContentValues;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import ru.job4j.todolist.Task;
@@ -15,13 +12,15 @@ public interface IStore {
 
     void addTask(String name,String description,String created);
 
-    void editTask(int position, String name,String description,String closed);
+    void editTask(int id, String name,String description,String closed);
 
-    void closeOrReopenTask(int position, String closed);
+    void closeOrReopenTask(int id, String closed);
 
-    void deleteTask(int position);
+    int deleteTask(int id);
 
     void deleteAllTasks();
 
-    Task getTask(int position);
+    Task findTaskByID(int id);
+
+    int getPositionOfTaskById(int id);
 }
