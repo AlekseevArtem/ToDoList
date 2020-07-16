@@ -28,9 +28,11 @@ import java.util.Objects;
 
 import ru.job4j.todolist.store.FileStore;
 import ru.job4j.todolist.store.IStore;
+import ru.job4j.todolist.store.PhotoFileStore;
 
 public class MainActivity extends AppCompatActivity implements ConfirmDeleteDialogFragment.ConfirmDeleteDialogListener {
     private RecyclerView recycler;
+    private PhotoFileStore photoStore;
     private IStore store;
     private final int CHANGED_TASK = 0;
 
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements ConfirmDeleteDial
         this.recycler = findViewById(R.id.activity_main);
         this.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         this.store = FileStore.getInstance(this);
+        this.photoStore = PhotoFileStore.getInstance(this);
         updateUI();
     }
 
@@ -116,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements ConfirmDeleteDial
 
     private void deleteAll() {
         store.deleteAllTasks();
+        photoStore.deleteAllImageFile();
         updateUI();
     }
 
@@ -174,6 +178,10 @@ public class MainActivity extends AppCompatActivity implements ConfirmDeleteDial
         }
 
         private void deleteTask(View view, int id) {
+            String pathToPhoto = store.findTaskByID(id).getPhoto();
+            if(pathToPhoto != null) {
+                photoStore.deleteImageFile(pathToPhoto);
+            }
             notifyItemRemoved(store.deleteTask(id));
         }
 

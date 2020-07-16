@@ -9,6 +9,7 @@ public class TodoDbSchema {
             public static final String DESC = "desc";
             public static final String CREATED = "created";
             public static final String CLOSED = "closed";
+            public static final String PHOTO = "photo";
         }
     }
 }

@@ -1,8 +1,7 @@
 package ru.job4j.todolist;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.Menu;
@@ -17,35 +16,44 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
 import ru.job4j.todolist.store.FileStore;
 import ru.job4j.todolist.store.IStore;
+import ru.job4j.todolist.store.PhotoFileStore;
 
 public class CreateOrEditTaskActivity extends AppCompatActivity {
+    public static final int REQUEST_IMAGE_CAPTURE = 123;
     private IStore store;
+    private PhotoFileStore photoStore;
     private int id = -1;
     private EditText mName;
     private EditText mDescription;
     private CheckBox mDone;
     private ImageView mPhoto;
-    private Bitmap mPhotoBitmap;
-    public static final int REQUEST_IMAGE_CAPTURE = 123;
+    private String mCurrentPhotoPath;
+    private String mOldPhotoPathForDelete;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = Objects.requireNonNull(data).getExtras();
-            mPhotoBitmap = (Bitmap) Objects.requireNonNull(extras).get("data");
-            Matrix matrix = new Matrix();
-            matrix.postRotate(90);
-            mPhotoBitmap = Bitmap.createBitmap(mPhotoBitmap, 0, 0, mPhotoBitmap.getWidth(), mPhotoBitmap.getHeight(), matrix, true);
-            mPhoto.setImageBitmap(mPhotoBitmap);
+            Picasso.with(this).load(new File(mCurrentPhotoPath)).into(mPhoto);
+            if (mOldPhotoPathForDelete != null) {
+                photoStore.deleteImageFile(mOldPhotoPathForDelete);
+            }
+        } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_CANCELED) {
+            photoStore.deleteImageFile(mCurrentPhotoPath);
+            mCurrentPhotoPath = mOldPhotoPathForDelete;
         }
+        mOldPhotoPathForDelete = null;
     }
 
     @Override
@@ -55,11 +63,11 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         mDone = findViewById(R.id.create_edit_task_done);
-        mPhoto = findViewById(R.id.photo);
+        mPhoto = findViewById(R.id.create_edit_task_photo);
         mName = findViewById(R.id.create_edit_task_name);
         mDescription = findViewById(R.id.create_edit_task_description);
-        if(state != null) mPhoto.setImageBitmap(mPhotoBitmap);
         this.store = FileStore.getInstance(this);
+        this.photoStore = PhotoFileStore.getInstance(this);
         mPhoto.setOnClickListener(this::clickOnPhoto);
         if(getIntent().hasExtra("id for edit")) {
             id = getIntent().getIntExtra("id for edit", -1);
@@ -70,7 +78,10 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
             mDescription.setText(task.getDesc());
             mDescription.setHint(task.getDesc());
             mDone.setChecked(task.getClosed() != null);
-
+            mCurrentPhotoPath = task.getPhoto();
+            if (mCurrentPhotoPath != null) {
+                Picasso.with(this).load(new File(mCurrentPhotoPath)).into(mPhoto);
+            }
         }
     }
 
@@ -104,6 +115,7 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
                     editTask();
                     setAnswerPositionResult(store.getPositionOfTaskById(id),"edit");
                 }
+                mCurrentPhotoPath = null;
                 onBackPressed();
                 return true;
             case android.R.id.home:
@@ -117,11 +129,22 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putString("pathToPhoto", mCurrentPhotoPath);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mCurrentPhotoPath != null) {
+            photoStore.deleteImageFile(mCurrentPhotoPath);
+        }
+        super.onBackPressed();
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        mCurrentPhotoPath = savedInstanceState.getString("pathToPhoto");
+        Picasso.with(this).load(new File(mCurrentPhotoPath)).into(mPhoto);
     }
 
     private void setAnswerPositionResult(int index, String name) {
@@ -130,10 +153,16 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
         setResult(RESULT_OK, intent);
     }
 
-
     private void clickOnPhoto(View view) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = photoStore.createImageFile();
+            mOldPhotoPathForDelete = mCurrentPhotoPath;
+            mCurrentPhotoPath = photoFile.getAbsolutePath();
+            Uri photoURI = FileProvider.getUriForFile(this,
+                    "com.example.android.provider",
+                    photoFile);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
             startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
         }
     }
@@ -142,7 +171,7 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
         String name = String.valueOf(this.mName.getText());
         String description = String.valueOf(this.mDescription.getText());
         String created = new SimpleDateFormat("dd-MM-yyyy HH:mm E").format(new Date(System.currentTimeMillis()));
-        store.addTask(name,description,created);
+        store.addTask(name,description,created,mCurrentPhotoPath);
     }
 
     private void editTask() {
@@ -152,7 +181,6 @@ public class CreateOrEditTaskActivity extends AppCompatActivity {
         if (this.mDone.isChecked()) {
             closed = new SimpleDateFormat("dd-MM-yyyy HH:mm E").format(new Date(System.currentTimeMillis()));
         }
-        store.editTask(id,name,description,closed);
-
+        store.editTask(id,name,description,closed,mCurrentPhotoPath);
     }
 }

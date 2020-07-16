@@ -48,7 +48,7 @@
         android:visibility="invisible" />
 
     <ImageView
-        android:id="@+id/photo"
+        android:id="@+id/create_edit_task_photo"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:cropToPadding="true"

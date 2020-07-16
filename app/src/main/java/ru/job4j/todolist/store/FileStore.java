@@ -38,7 +38,9 @@ public class FileStore implements IStore{
         File[] allFiles = fileDir.listFiles();
         for (int index = 0; index < Objects.requireNonNull(allFiles).length; index++) {
             try (BufferedReader in = new BufferedReader(new FileReader(allFiles[index]))) {
-                Task task = new Task(Integer.parseInt(in.readLine()), in.readLine(), in.readLine(),in.readLine(),in.readLine());
+                Task task = new Task(Integer.parseInt(in.readLine()), in.readLine(),
+                        in.readLine(),in.readLine(),in.readLine(),in.readLine());
+                if (task.getClosed().equals("")) task.setClosed(null);
                 tasks.add(task);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -62,21 +64,23 @@ public class FileStore implements IStore{
     }
 
     @Override
-    public void addTask(String name, String description, String created) {
+    public void addTask(String name, String description, String created, String photo) {
         File file = new File(context.getFilesDir(), (counter) + ".txt");
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file)))) {
             out.println(counter);
             out.println(name);
             out.println(description);
             out.println(created);
-            tasks.add(new Task(counter++, name, description, created, null));
+            out.println("");
+            out.println(photo);
+            tasks.add(new Task(counter++, name, description, created, null, photo));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void editTask(int id, String name, String description, String closed) {
+    public void editTask(int id, String name, String description, String closed, String photo) {
         File file = new File(context.getFilesDir(), id + ".txt");
         Task task = findTaskByID(id);
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file)))) {
@@ -85,9 +89,11 @@ public class FileStore implements IStore{
             out.println(description);
             out.println(task.getCreated());
             out.println(closed);
+            out.println(photo);
             task.setName(name);
             task.setDesc(description);
             task.setClosed(closed);
+            task.setPhoto(photo);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -103,6 +109,7 @@ public class FileStore implements IStore{
             out.println(task.getDesc());
             out.println(task.getCreated());
             out.println(closed);
+            out.println(task.getPhoto());
             task.setClosed(closed);
         } catch (Exception e) {
             e.printStackTrace();

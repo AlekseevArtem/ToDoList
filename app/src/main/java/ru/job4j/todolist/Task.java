@@ -6,13 +6,16 @@ public class Task {
     private String desc;
     private String created;
     private String closed;
+    private String photo;
 
-    public Task(int id, String name, String desc, String created, String closed) {
+    public Task(int id, String name, String desc, String created,
+                String closed, String photo) {
         this.id = id;
         this.name = name;
         this.desc = desc;
         this.created = created;
         this.closed = closed;
+        this.photo = photo;
     }
 
     public Task(String name, String desc, String created) {
@@ -59,5 +62,13 @@ public class Task {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }

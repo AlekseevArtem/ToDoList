@@ -10,9 +10,9 @@ public interface IStore {
 
     List<Task> getFilteredTasks(String filter);
 
-    void addTask(String name,String description,String created);
+    void addTask(String name,String description,String created, String photo);
 
-    void editTask(int id, String name,String description,String closed);
+    void editTask(int id, String name,String description,String closed, String photo);
 
     void closeOrReopenTask(int id, String closed);
 

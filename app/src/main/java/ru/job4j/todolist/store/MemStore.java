@@ -38,16 +38,17 @@ public class MemStore implements IStore {
     }
 
     @Override
-    public void addTask(String name,String description,String created) {
-        this.tasks.add(new Task(counter++, name, description, created,null));
+    public void addTask(String name,String description,String created, String photo) {
+        this.tasks.add(new Task(counter++, name, description, created,null, photo));
     }
 
     @Override
-    public void editTask(int id, String name,String description,String closed) {
+    public void editTask(int id, String name,String description,String closed, String photo) {
         Task task = findTaskByID(id);
         task.setName(name);
         task.setDesc(description);
         task.setClosed(closed);
+        task.setPhoto(photo);
     }
 
     @Override

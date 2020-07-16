@@ -33,7 +33,8 @@ public class SqlStore extends SQLiteOpenHelper implements IStore {
                         TodoDbSchema.TodoTable.Cols.NAME + ", " +
                         TodoDbSchema.TodoTable.Cols.DESC + ", " +
                         TodoDbSchema.TodoTable.Cols.CREATED + ", " +
-                        TodoDbSchema.TodoTable.Cols.CLOSED + " " +
+                        TodoDbSchema.TodoTable.Cols.CLOSED + ", " +
+                        TodoDbSchema.TodoTable.Cols.PHOTO + " " +
                         ")"
         );
     }
@@ -61,10 +62,11 @@ public class SqlStore extends SQLiteOpenHelper implements IStore {
         while (!cursor.isAfterLast()) {
             this.tasks.add(new Task(
                     cursor.getInt(cursor.getColumnIndex("id")),
-                    cursor.getString(cursor.getColumnIndex("name")),
-                    cursor.getString(cursor.getColumnIndex("desc")),
-                    cursor.getString(cursor.getColumnIndex("created")),
-                    cursor.getString(cursor.getColumnIndex("closed"))
+                    cursor.getString(cursor.getColumnIndex(TodoDbSchema.TodoTable.Cols.NAME)),
+                    cursor.getString(cursor.getColumnIndex(TodoDbSchema.TodoTable.Cols.DESC)),
+                    cursor.getString(cursor.getColumnIndex(TodoDbSchema.TodoTable.Cols.CREATED)),
+                    cursor.getString(cursor.getColumnIndex(TodoDbSchema.TodoTable.Cols.CLOSED)),
+                    cursor.getString(cursor.getColumnIndex(TodoDbSchema.TodoTable.Cols.PHOTO))
             ));
             cursor.moveToNext();
         }
@@ -86,22 +88,24 @@ public class SqlStore extends SQLiteOpenHelper implements IStore {
     }
 
     @Override
-    public void addTask(String name,String description,String created) {
+    public void addTask(String name,String description,String created, String photo) {
         ContentValues value = new ContentValues();
         value.put(TodoDbSchema.TodoTable.Cols.NAME, name);
         value.put(TodoDbSchema.TodoTable.Cols.DESC, description);
         value.put(TodoDbSchema.TodoTable.Cols.CREATED, created);
+        value.put(TodoDbSchema.TodoTable.Cols.PHOTO, photo);
         int id = (int) this.getWritableDatabase().insert(TodoDbSchema.TodoTable.NAME, null, value);
-        Task task = new Task(id, name, description, created, null);
+        Task task = new Task(id, name, description, created, null, photo);
         this.tasks.add(task);
     }
 
     @Override
-    public void editTask(int id, String name, String description, String closed) {
+    public void editTask(int id, String name, String description, String closed, String photo) {
         ContentValues value = new ContentValues();
         value.put(TodoDbSchema.TodoTable.Cols.NAME, name);
         value.put(TodoDbSchema.TodoTable.Cols.DESC, description);
         value.put(TodoDbSchema.TodoTable.Cols.CLOSED, closed);
+        value.put(TodoDbSchema.TodoTable.Cols.PHOTO, photo);
         this.getWritableDatabase().update(TodoDbSchema.TodoTable.NAME,
                 value,
                 "id = ?",
@@ -110,6 +114,7 @@ public class SqlStore extends SQLiteOpenHelper implements IStore {
         task.setName(name);
         task.setDesc(description);
         task.setClosed(closed);
+        task.setPhoto(photo);
     }
 
     @Override

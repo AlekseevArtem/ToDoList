@@ -3,11 +3,15 @@ package ru.job4j.todolist;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 import java.util.Objects;
 
 import ru.job4j.todolist.store.FileStore;
@@ -32,8 +36,12 @@ public class ShowTaskActivity extends AppCompatActivity {
         if (task.getClosed() != null){
             ((TextView) findViewById(R.id.show_task_finished))
                     .setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R.id.show_task_closed))
-                    .setText(task.getClosed());
+        }
+        ((TextView) findViewById(R.id.show_task_closed))
+                .setText(task.getClosed());
+        ImageView photo = findViewById(R.id.show_task_photo);
+        if(task.getPhoto() != null) {
+            Picasso.with(this).load(new File(task.getPhoto())).into(photo);
         }
     }
 
