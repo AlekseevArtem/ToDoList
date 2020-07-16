@@ -23,6 +23,17 @@ public class FileStore implements IStore{
 
     private FileStore(Context context) {
         this.context = context;
+    }
+
+    public static FileStore getInstance(Context context) {
+        if (INST == null) {
+            INST = new FileStore(context);
+            INST.updateStore();
+        }
+        return INST;
+    }
+
+    private void updateStore (){
         File fileDir = new File(String.valueOf(context.getFilesDir()));
         File[] allFiles = fileDir.listFiles();
         for (int index = 0; index < Objects.requireNonNull(allFiles).length; index++) {
@@ -34,13 +45,6 @@ public class FileStore implements IStore{
             }
         }
         if (allFiles.length != 0) counter = Integer.parseInt(allFiles[allFiles.length-1].getName().split("\\.")[0]) + 1;
-    }
-
-    public static FileStore getInstance(Context context) {
-        if (INST == null) {
-            INST = new FileStore(context);
-        }
-        return INST;
     }
 
     @Override

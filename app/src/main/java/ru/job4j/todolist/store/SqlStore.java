@@ -22,24 +22,6 @@ public class SqlStore extends SQLiteOpenHelper implements IStore {
 
     public SqlStore(@Nullable Context context) {
         super(context, DB, null , VERSION);
-        Cursor cursor = this.getWritableDatabase().query(
-                TodoDbSchema.TodoTable.NAME,
-                null,
-                null, null,
-                null, null, null
-        );
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            this.tasks.add(new Task(
-                    cursor.getInt(cursor.getColumnIndex("id")),
-                    cursor.getString(cursor.getColumnIndex("name")),
-                    cursor.getString(cursor.getColumnIndex("desc")),
-                    cursor.getString(cursor.getColumnIndex("created")),
-                    cursor.getString(cursor.getColumnIndex("closed"))
-            ));
-            cursor.moveToNext();
-        }
-        cursor.close();
     }
 
     @Override
@@ -63,8 +45,30 @@ public class SqlStore extends SQLiteOpenHelper implements IStore {
     public static SqlStore getInstance(Context context) {
         if (INST == null){
             INST = new SqlStore(context);
+            INST.updateStore();
         }
         return INST;
+    }
+
+    private void updateStore (){
+        Cursor cursor = this.getWritableDatabase().query(
+                TodoDbSchema.TodoTable.NAME,
+                null,
+                null, null,
+                null, null, null
+        );
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            this.tasks.add(new Task(
+                    cursor.getInt(cursor.getColumnIndex("id")),
+                    cursor.getString(cursor.getColumnIndex("name")),
+                    cursor.getString(cursor.getColumnIndex("desc")),
+                    cursor.getString(cursor.getColumnIndex("created")),
+                    cursor.getString(cursor.getColumnIndex("closed"))
+            ));
+            cursor.moveToNext();
+        }
+        cursor.close();
     }
 
     @Override
