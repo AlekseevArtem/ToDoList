@@ -1,14 +1,17 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.1"
 
     defaultConfig {
         multiDexEnabled true
         applicationId "ru.job4j.todolist"
-        minSdkVersion 14
-        targetSdkVersion 29
+        minSdkVersion 16
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
@@ -23,23 +26,45 @@ android {
     }
     compileOptions {
         android.defaultConfig.vectorDrawables.useSupportLibrary = true
-        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    android.testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+        }
     }
 }
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
+
+    //UI
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.mediarouter:mediarouter:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.google.android.material:material:1.2.1'
+
+    //Picasso
     implementation 'com.squareup.picasso:picasso:2.5.2'
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.9'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    //Test
+    def versionKotest = "4.3.0"
+    testImplementation "io.kotest:kotest-runner-junit5:$versionKotest"
+    testImplementation "io.kotest:kotest-assertions-core:$versionKotest"
+    testImplementation "io.kotest:kotest-property:$versionKotest"
+    testImplementation 'junit:junit:4.13.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    //Kotlin and coroutines
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9"
 
 }
